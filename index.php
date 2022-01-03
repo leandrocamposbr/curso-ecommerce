@@ -8,7 +8,13 @@ $app->config('debug', true);
 
 $app->get('/', function() {
     
-	echo "OK";
+	// Leoc - original
+	//echo "OK";
+
+	// leoc - aula 102 depois de incluir a classe sql com namespace Hcode\DB
+	$sql = new Hcode\DB\Sql();
+	$results = $sql->select("SELECT * FROM tb_users");
+	echo json_encode($results);
 
 });
 
