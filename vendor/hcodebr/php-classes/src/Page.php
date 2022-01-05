@@ -1,5 +1,7 @@
 <?php
 
+// ! classe estendida na PageAdmin
+
 namespace Hcode;
 
 use Rain\Tpl;
@@ -17,15 +19,15 @@ class Page {
     ];    
 
     // leoc - __construct é um método mágico.
-    public function __construct($opts = array()) {
+    // - o segundo parâmetro $tpl_dir foi incluido na aula 105 antes de estender na classe PageAdmin.
+    public function __construct($opts = array(), $tpl_dir = "/views/") {
      
         // leoc - array_merge mescla as arrays (!). A ordem do merge é importante. O último parâmetro $opts, 
         // se vier no construtor, e algo nele der conflito com o $defaults, o que vale é $opts, que sobrepõe o conflito no $default 
         $this->options = array_merge($this->defaults, $opts);
-
        	
         $config = array(
-            "tpl_dir"       => $_SERVER["DOCUMENT_ROOT"]."/views/",
+            "tpl_dir"       => $_SERVER["DOCUMENT_ROOT"].$tpl_dir,
             "cache_dir"     => $_SERVER["DOCUMENT_ROOT"]."/views-cache/",
             "debug"         => false // set to false to improve the speed
        );

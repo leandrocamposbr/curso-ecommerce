@@ -4,6 +4,7 @@ require_once("vendor/autoload.php");
 
 // informa os namespaces. Dentro de vendor tem vários. Aqui informe o que quer carregar
 use \Hcode\Page; // aula 103 nosso namespace. Dentro de vendor tem várias. Essa é a nossa.
+use \Hcode\PageAdmin; // aula 105, use para a nova classe PageAdmin.
 use \Slim\Slim;	 
 
 // aula 103 - aqui cria 'uma nova aplicação' no slim, para as rotas.
@@ -15,7 +16,7 @@ $app = new Slim();	// para instanciar direto sem 'use' seria '$app = new \Slim\S
 
 $app->config('debug', true);
 
-// "/" é a rota que estamos chamando e o bloco da rota.
+// "/" é a rota que estamos chamando e o 'bloco da rota' entre { }.
 // (*1) aula 103 - "se chamarem meu site sem nenhum complemento na url ("/"), execute isso"
 $app->get('/', function() {		
     
@@ -28,10 +29,20 @@ $app->get('/', function() {
 	//echo json_encode($results);
 
 	// aula 103, depois de criar a classe Page.
-	$page = new Page(); // aqui já vai incluir o header
+	// nossas classes ficam em vendor\hcodebr\php-classes\src
+	$page = new Page(); // aqui já vai incluir o header 
 	$page->setTpl("index"); // acrescenta o corpo
 
 	// nesse ponto, vai chamar o __destruct() da classe e desenhar o footer
+
+});
+
+// aula 105 - 12"00' nova rota para a administração 
+$app->get('/admin', function() {		
+    
+	// nossas classes ficam em vendor\hcodebr\php-classes\src
+	$page = new PageAdmin(); // aqui já vai incluir o header
+	$page->setTpl("index"); // acrescenta o corpo
 
 });
 
