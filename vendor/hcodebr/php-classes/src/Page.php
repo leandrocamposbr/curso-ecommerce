@@ -10,11 +10,13 @@ use Rain\Tpl;
 
 class Page {
 
-    // leoc - aula 103 - as variáveis (parâmetros na chamada da classe) virão de acordo com a rota chamada no slim.
-
+    // aula 103 - as variáveis (parâmetros na chamada da classe) virão de acordo com a rota chamada no slim.
+    // aula 106 - novos parâmetros "header" e "footer", que viror, ex. do login do admin
     private $tpl;
     private $options = [];
     private $defaults = [
+        "header"=>true,
+        "footer"=>true,
         "data"=>[]
     ];    
 
@@ -40,8 +42,9 @@ class Page {
        $this->setData($this->options["data"]);
 
        // leoc - desenhar cabeçalho que se repete em toda página, sempre que instanciar esta classe Page.
-       $this->tpl->draw("header"); // o método espera o nome do arquivo (que está em tpl_dir)
-       
+       // leoc - aula 106 novos parâmetros "header e footer"
+       if ($this->options["header"] === true) $this->tpl->draw("header"); // o método espera o nome do arquivo (que está em tpl_dir)
+      
     }
 
     // método otimizado para percorrer o array no parâmetro recebido. Feito assim para não repetir o código no __construct() e no setTpl()
@@ -62,7 +65,8 @@ class Page {
     public function __destruct() {
  
         // rodapé que se repete em todas as páginas
-        $this->tpl->draw("footer"); // o método espera o nome do arquivo (que está em tpl_dir)
+        // leoc - aula 106 novos parâmetros "header e footer"
+       if ($this->options["footer"] === true) $this->tpl->draw("footer"); // o método espera o nome do arquivo (que está em tpl_dir)
 
     }
 
