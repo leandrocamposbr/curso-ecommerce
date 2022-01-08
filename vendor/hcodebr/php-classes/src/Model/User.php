@@ -105,10 +105,114 @@ class User extends Model {
 
     }
 
-    // aula 106 34"37 - logour
+    // aula 106 34"37 - logout
     public static function logout() {
         $_SESSION[User::SESSION] = NULL; // Também poderia ser session_unset passando o nome da session
     }
+
+    // aula 107 - 7"49 - listar dados de usuário que aparecem em admin
+    public static function listAll() {
+        $sql = new Sql();
+        return $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) ORDER BY b.desperson");
+    }
+
+    // aula 107 18"40 - método para salvar os dados de usuário.
+    // será chamado de index.php
+    // notar que não é estático
+    public function save() {
+
+        $sql = new Sql();
+
+        // STORED PROCEDURE NO BANCO -  20"11
+        // se não tivesse procedure, teríamos que fazer várias chamadas ao banco.
+        // a procedure “sp_users_save()” de uma vez: grava no banco o usuário/ em tb_users, tb_persons 
+        // e retorna um select inner join disso, com o código de usr criado.
+
+        /*
+        Estrutura que a procedure 'sp_users_save()' espera receber:
+            pdesperson VARCHAR(64), 
+            pdeslogin VARCHAR(64), 
+            pdespassword VARCHAR(256), 
+            pdesemail VARCHAR(128), 
+            pnrphone BIGINT, 
+            pinadmin TINYINT
+        */
+        $results = $sql->select("CALL sp_users_save(:pdesperson, :pdeslogin, :pdespassword, :pdesemail, :pnrphone, :pinadmin)", 
+            array(
+            ":pdesperson"=>$this->getdesperson(), 
+            ":pdeslogin"=>$this->getdeslogin(), 
+            ":pdespassword"=>$this->getdespassword(), 
+            ":pdesemail"=>$this->getdesemail(), 
+            ":pnrphone"=>$this->getnrphone(), 
+            ":pinadmin"=>$this->getinadmin() 
+        ));
+
+        // só nos interessa a posição 0 do retorno. Para o caso de a chamada a Users->save() esperar um retorno.
+        $this->setData($results[0]);
+
+    }
+
+    // aula 107 - 28"28
+    public function get ($iduser) {
+
+        $sql = new Sql();
+
+        $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) WHERE a.iduser = :iduser",
+            array(
+                ":iduser"=>$iduser
+            ));
+        
+        $this->setData($results[0]);
+
+    }
+
+    // aula 107 - 35"16
+    // será chamado de index.php
+    // notar que não é estático
+    public function update() {
+
+        $sql = new Sql();
+
+        // STORED PROCEDURE NO BANCO
+        // se não tivesse procedure, teríamos que fazer várias chamadas ao banco.
+        // A procedure "sp_usersupdate_save()” de uma vez: atualiza update no banco o usuário 
+        // em tb_users, tb_persons e retorna um select inner join disso já atualizado.
+
+        /*
+        Estrutura que a procedure 'sp_users_save()' espera receber:
+            piduser INT,
+            pdesperson VARCHAR(64), 
+            pdeslogin VARCHAR(64), 
+            pdespassword VARCHAR(256), 
+            pdesemail VARCHAR(128), 
+            pnrphone BIGINT, 
+            pinadmin TINYINT
+        */
+        $results = $sql->select("CALL sp_usersupdate_save(:piduser, :pdesperson, :pdeslogin, :pdespassword, :pdesemail, :pnrphone, :pinadmin)", 
+            array(
+            ":piduser"=>$this->getiduser(), 
+            ":pdesperson"=>$this->getdesperson(), 
+            ":pdeslogin"=>$this->getdeslogin(), 
+            ":pdespassword"=>$this->getdespassword(), 
+            ":pdesemail"=>$this->getdesemail(), 
+            ":pnrphone"=>$this->getnrphone(), 
+            ":pinadmin"=>$this->getinadmin() 
+        ));
+
+        // só nos interessa a posição 0 do retorno. Para o caso de a chamada a Users->update() esperar um retorno.
+        $this->setData($results[0]);
+
+    }    
+
+    // aula 107 - 38"37
+    public function delete() {
+        $sql = new Sql();
+        
+        // chamando STORED PROCEDURE que deleta de tb_users e tb_person. 
+        $sql->query("CALL sp_users_delete(:iduser)", array(         
+            ":iduser"=>$this->getiduser()
+        ));
+    }    
 
 }
 
