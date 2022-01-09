@@ -6,14 +6,14 @@
 namespace Hcode\Model;
 
 use \Hcode\DB\Sql;
-// aula 106, 14"46' - boa prática é ter uma classe de getters e setters para a classe model (como é o caso dessa)
-// e daí estender a classe model, que daí já saberá fazer seus getters/setters respectivos.
-use \Hcode\Model;
-use UConverter;
+use \Hcode\Model; // aula 106, 14"46' - boa prática classe de getters e setters para a classe model que será estendida, e daí já saberá fazer seus getters/setters respectivos.
+use \Hcode\Mailer; // aula 108
 
 class User extends Model {
 
     const SESSION = "User"; // ver nota *1
+    const SECRET = "HcodePhp7_Secret"; // não subir isso para um git publico
+    const SECRET_IV = "HcodePhp7_Secret_IV";
 
     public static function login ($login, $password) {
 
@@ -213,6 +213,137 @@ class User extends Model {
             ":iduser"=>$this->getiduser()
         ));
     }    
+
+    // aula 108 
+	public static function getForgot($email, $inadmin = true) {
+
+		$sql = new Sql();
+
+		$results = $sql->select("
+			SELECT *
+			FROM tb_persons a
+			INNER JOIN tb_users b USING(idperson)
+			WHERE a.desemail = :email;
+		", array(
+			":email"=>$email
+		));
+
+		if (count($results) === 0) {
+			throw new \Exception("Não foi possível recuperar a senha.");
+		} else {
+
+            $data = $results[0];
+
+            // executando a stored procedure
+			$results2 = $sql->select("CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
+				":iduser"=>$data['iduser'],
+				":desip"=>$_SERVER['REMOTE_ADDR']
+			));
+
+			if (count($results2) === 0) {
+				throw new \Exception("Não foi possível recuperar a senha.");
+			} else {
+
+				$dataRecovery = $results2[0];
+
+                // (!) não passar o segredo para um código que ficará no git publico
+				$code = openssl_encrypt($dataRecovery['idrecovery'], 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
+
+				$code = base64_encode($code);
+
+				if ($inadmin === true) {
+					$link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
+				} else {
+					$link = "http://www.hcodecommerce.com.br/forgot/reset?code=$code";
+				}				
+
+                // classe PhpMailer foi objeto da aula 87
+                // vamos usar um template para o e-mail
+                // foi criada aqui 18"42 a classe Mailer em \vendor\hcodebr\php-classes\src
+				$mailer = new Mailer($data['desemail'], $data['desperson'], 
+                    "Redefinir senha da Hcode Store", 
+                    "forgot", // template em \views\email\forgot.html
+                    // variáveis que o template espera. No template, estão entre chaves, ex. neste caso, o template espera
+                    // {$name} que abaixo é "name"
+                    // {$link} que abaixo é "link"
+                    array(
+                        "name"=>$data['desperson'],
+                        "link"=>$link
+				));				
+
+				$mailer->send();
+
+				return $link; // na aula 108, 28"15 estava return $data; ...
+			}
+
+		}
+
+	}
+
+    // aula 108 34"34 método estático chamado no index.php, rota "/admin/forgot/reset"
+    // para ganhar tempo copiado do github deles, aqui https://github.com/hcodebr/ecommerce/blob/master/vendor/hcodebr/php-classes/src/Model/User.php
+    public static function validForgotDecrypt($code) {
+
+        // decodificar a parte do base64 (usado para gerar uma string válida para trafegar na URL)
+		$code = base64_decode($code);
+
+        $idrecovery = openssl_decrypt($code, 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
+
+        $sql = new Sql();
+
+
+        // retorna a seleção correspondente ao id recebido na URL que está no link do e-mail que usuário recebeu no 'esqueci a senha'
+        // aqui vai usar validação de 1 hora para o 'token' enviado. Usar DATE_ADD(). Poderia ser 30 SECONDS, ex.
+
+		$results = $sql->select("
+			SELECT *
+			FROM tb_userspasswordsrecoveries a
+			INNER JOIN tb_users b USING(iduser)
+			INNER JOIN tb_persons c USING(idperson)
+			WHERE
+				a.idrecovery = :idrecovery
+				AND
+				a.dtrecovery IS NULL
+				AND
+				DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();
+        ", array(
+			":idrecovery"=>$idrecovery
+		));
+
+		if (count($results) === 0) {
+			throw new \Exception("Não foi possível recuperar a senha.");
+		} else {
+			return $results[0];
+		}
+	}
+
+    // aula 108 43"12
+    // método estático que vai salvar no banco que esse processo de recuperação já foi usado e não aceitar novamente, mesmo que no prazo de 1h
+    // chamado do index.php, na rota post("/admin/forgot/reset")
+	public static function setForgotUsed($idrecovery) {
+
+        $sql = new Sql();
+
+        // atualiza o campo dtrecovery com o timestamp atual, informando que foi usado
+        $sql->query("UPDATE tb_userspasswordsrecoveries SET dtrecovery = NOW() WHERE idrecovery = :idrecovery", array(
+            ":idrecovery"=>$idrecovery
+        ));
+
+    }
+
+	// aula 108 45"43
+	// método para setar a nova senha no banco, com hash
+	// chamado do index.php, rota post("/admin/forgot/reset")
+	public function setPassword($password) {
+
+        $sql = new Sql();
+
+        $sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
+            ":password"=>$password,
+            ":iduser"=>$this->getiduser()
+        ));
+
+    }
 
 }
 

@@ -7,7 +7,9 @@ class Sql {
 	const HOSTNAME = "127.0.0.1";
 	const USERNAME = "root";
 	const PASSWORD = "";
-	const DBNAME = "db_ecommerce";
+	//const DBNAME = "db_ecommerce";
+	const DBNAME = "db_commerce2"; // criado em 09/01/22 14h39 banco anterior zoado usuários
+
 
 	private $conn;
 
