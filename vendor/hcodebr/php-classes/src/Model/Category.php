@@ -29,7 +29,7 @@ class Category extends Model {
 
 		$this->setData($results[0]); 
 
-		//Category::updateFile(); // veio no git, mas não está na aula ainda
+		Category::updateFile(); 
 	}
 
 
@@ -52,9 +52,12 @@ class Category extends Model {
 			':idcategory'=>$this->getidcategory()
 		]);
 
-		//Category::updateFile(); // veio no git, mas não está na aula ainda
+		Category::updateFile(); 
 	}
-	/*
+
+	// aula 110 
+	// Método para atualizar dinamicamente as categorias de produto no \views\footer (...) {include="categories-menu"}
+	// com as categrias do banco. É chamado aqui mesmo nesta classe quando deleta, inclui ou altera uma categoria. 
 	public static function updateFile() {
 		$categories = Category::listAll();
 
@@ -64,8 +67,13 @@ class Category extends Model {
 			array_push($html, '<li><a href="/categories/'.$row['idcategory'].'">'.$row['descategory'].'</a></li>');
 		}
 
+		// explode() é para string para array
+		// implode() é arrary para string
+
 		file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode('', $html));
 	}
+
+	/*
 
 	public function getProducts($related = true) {
 

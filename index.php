@@ -483,6 +483,25 @@ $app->post("/admin/categories/:idcategory", function($idcategory) {
 
 });
 
+// aula 110 # a partir da 109, menos comentários e não repete comentáriod do que já fez igual
+// URL chamada ao clicar em uma categoria no site http://www.hcodecommerce.com.br/categories/7
+$app->get("/categories/:idcategory", function($idcategory) {
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	// construtor de Page() inclui o header 
+	// setTpl(); // acrescenta o corpo
+	// __destruct() da classe e desenha o footer
+	$page = new Page(); 
+	$page->setTpl("category", [
+		'category'=>$category->getValues(),
+		'products'=>[]
+	]); 
+
+});
+
 $app->run(); // aqui é que executa tudo acima.
 
  ?>
