@@ -15,6 +15,62 @@ class User extends Model {
     const SECRET = "HcodePhp7_Secret"; // não subir isso para um git publico
     const SECRET_IV = "HcodePhp7_Secret_IV";
 
+    // aula 116 15"58 criado inicialmente para o carrinho de compras, sessão
+    // copiado do github
+	public static function getFromSession()	{
+
+		$user = new User();
+
+		if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0) {
+
+			$user->setData($_SESSION[User::SESSION]);
+
+		}
+
+		return $user;
+
+	}
+
+    // aula 116 17"53 - copiado do github
+    // criado inicialmente para o carrinho de compras, verificar se está logado
+    // parecido com o verifyLogin() <- que redireciona para /admin/login, o que não queremos aqui
+    public static function checkLogin($inadmin = true) {
+
+		if (!isset($_SESSION[User::SESSION])
+			||
+			!$_SESSION[User::SESSION]
+			||
+			!(int)$_SESSION[User::SESSION]["iduser"] > 0) {
+
+			//Não está logado
+			return false;
+
+		} else {
+
+            // aula 116 20"31 está logado, mas: pode acessar como admin?? ou é usuário? !!! isso é um risco.
+            
+            // está logado e esta é uma rota da adminitração
+			if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+
+				return true;
+
+            // está logado, não está em uma rota da administração. ok, pode entrar.
+			} else if ($inadmin === false) {
+
+				return true;
+
+            // se não está em um padrão acima, retorna que não está logado    
+			} else {
+
+				return false;
+
+			}
+
+		}
+
+	}
+
+
     public static function login ($login, $password) {
 
         $sql = new Sql();
@@ -88,10 +144,13 @@ class User extends Model {
 
     // aula 106 30"00 - método estátivco para verificar na sessão se está logado. 
     // chamado das páginas. Ex. da index.php
+    // aula 116 faz o checkLogin, parecido com esse, mas não redireciona Location
     public static function verifyLogin($inadmin = true) {
 
         // SESSION é uma constante criada lá em cima
 
+        // isso estava até a aula 116, antes de criar o checkLogin() nesta classe
+        /*
         if (
             !isset($_SESSION[User::SESSION])
             || !$_SESSION[User::SESSION]
@@ -102,6 +161,16 @@ class User extends Model {
             header("Location: /admin/login");
             exit;
         }
+        */
+
+        // aula 116 23"04 agora que o checkLogin() faz o mesmo, usar ele. 
+        // a diferença aqui é o redirect
+		if (User::checkLogin($inadmin)) {
+
+            header("Location: /admin/login");
+            exit;
+            
+		}
 
     }
 

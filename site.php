@@ -3,6 +3,7 @@
 use \Hcode\Page; // aula 103 nosso namespace. Dentro de vendor tem várias. Essa é a nossa.
 use \Hcode\Model\Product;
 use \Hcode\Model\Category; // aula 113
+use \Hcode\Model\Cart; // aula 116
 
 // "/" é a rota que estamos chamando e o 'bloco da rota' entre { }.
 // (*1) aula 103 - "se chamarem meu site sem nenhum complemento na url ("/"), execute isso"
@@ -82,21 +83,25 @@ $app->get("/products/:desurl", function($desurl){
 
 });
 
-/*
 $app->get("/cart", function(){
 
 	$cart = Cart::getFromSession();
 
 	$page = new Page();
 
+	/*
 	$page->setTpl("cart", [
 		'cart'=>$cart->getValues(),
 		'products'=>$cart->getProducts(),
 		'error'=>Cart::getMsgError()
 	]);
+	*/
+
+	$page->setTpl("cart");
 
 });
 
+/*
 $app->get("/cart/:idproduct/add", function($idproduct){
 
 	$product = new Product();
