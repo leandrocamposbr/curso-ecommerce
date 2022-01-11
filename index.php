@@ -13,12 +13,12 @@ $app = new Slim();	// para instanciar direto sem 'use' seria '$app = new \Slim\S
 $app->config('debug', true);
 
 // includes para as rotas
-require_once("inc-functions.php");
-require_once("inc-site.php");
-require_once("inc-admin.php");
-require_once("inc-admin-users.php");
-require_once("inc-admin-categories.php");
-require_once("inc-admin-products.php");
+require_once("functions.php");
+require_once("site.php");
+require_once("admin.php");
+require_once("admin-users.php");
+require_once("admin-categories.php");
+require_once("admin-products.php");
 
 $app->run();
 

@@ -160,6 +160,7 @@ class Product extends Model {
 
 	}
 
+	// aula 115 - baixado do github
 	public function getFromURL($desurl) {
 
 		$sql = new Sql();
@@ -172,6 +173,7 @@ class Product extends Model {
 
 	}
 
+	// aula 115 6"48 
 	public function getCategories() {
 
 		$sql = new Sql();
