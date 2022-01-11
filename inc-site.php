@@ -36,22 +36,34 @@ $app->get('/', function() {
 
 // aula 110 # a partir da 109, menos comentários e não repete comentáriod do que já fez igual
 // URL chamada ao clicar em uma categoria no site http://www.hcodecommerce.com.br/categories/7
+// aula 114 de paginação incrementou bem. Daí copiei do github https://github.com/hcodebr/ecommerce/blob/master/site.php
 $app->get("/categories/:idcategory", function($idcategory) {
+
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 
 	$category = new Category();
 
 	$category->get((int)$idcategory);
 
-	// construtor de Page() inclui o header 
-	// setTpl(); // acrescenta o corpo
-	// __destruct() da classe e desenha o footer
-	$page = new Page(); 
+	$pagination = $category->getProductsPage($page);
+
+	$pages = [];
+
+	for ($i=1; $i <= $pagination['pages']; $i++) { 
+		array_push($pages, [
+			'link'=>'/categories/'.$category->getidcategory().'?page='.$i,
+			'page'=>$i
+		]);
+	}
+
+	$page = new Page();
+
 	$page->setTpl("category", [
 		'category'=>$category->getValues(),
-		'products'=>Product::checkList($category->getProducts())
-	]); 
+		'products'=>$pagination["data"],
+		'pages'=>$pages
+	]);
 
 });
-
 
 ?>

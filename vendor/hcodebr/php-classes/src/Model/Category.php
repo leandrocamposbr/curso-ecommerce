@@ -108,13 +108,16 @@ class Category extends Model {
 
 	}
 
-	/*
-	public function getProductsPage($page = 1, $itemsPerPage = 8) {
+	// 114 - paginação 5"11 
+	public function getProductsPage($page = 1, $itemsPerPage = 3) {
 
 		$start = ($page - 1) * $itemsPerPage;
 
 		$sql = new Sql();
 
+		// QUE DOIDO.... SQL_CALC_FOUN_ROWS equivale a um COUNT(). 
+		// o retorno fica igual a um select sem ele, mas, NO PRÓXIMO SELECT, 
+		// dá pra usar FOUND_ROWS() para receber o resultado.
 		$results = $sql->select("
 			SELECT SQL_CALC_FOUND_ROWS *
 			FROM tb_products a
@@ -135,8 +138,7 @@ class Category extends Model {
 		];
 
 	}
-	*/
-
+	
 	// aula 113 17"43
 	// notar que está forçando receber um valor do tipo Product
 	public function addProduct(Product $product) {
