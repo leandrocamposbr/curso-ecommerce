@@ -1,7 +1,7 @@
 <?php 
 
 /*
-  aula 101 - copiado do git do curso 
+  aula 111 - copiado do git do curso 
   https://github.com/hcodebr/ecommerce/blob/master/vendor/hcodebr/php-classes/src/Model/Product.php
 */
 
@@ -21,9 +21,13 @@ class Product extends Model {
 
 	}
 
+	// aula 112 6"30
+	// isso por causa da foto 'que não está na tabela produtos' conforme falou na aula
 	public static function checkList($list) {
 
-		foreach ($list as &$row) {
+		// aula 112 7"06 - o "&" é para 'manipular a mesma variável na memória (?) conforme falado na aula'
+		// significa que VAI ALTERAR O VALOR DENTRO DO ARRAY LIST 
+		foreach ($list as &$row) { 
 			
 			$p = new Product();
 			$p->setData($row);

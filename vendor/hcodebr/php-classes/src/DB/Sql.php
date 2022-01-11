@@ -8,8 +8,8 @@ class Sql {
 	const USERNAME = "root";
 	const PASSWORD = "";
 	//const DBNAME = "db_ecommerce";
-	const DBNAME = "db_commerce2"; // criado em 09/01/22 14h39 banco anterior zoado usuários
-
+	//const DBNAME = "db_commerce2"; // criado em 09/01/22 14h39 banco anterior zoado usuários
+	const DBNAME = "db_ecommerce_v03"; // criado em 10/01/22 20h32 banco anterior deu pau no mysql. Recuperei o último backup de 09/01/22
 
 	private $conn;
 

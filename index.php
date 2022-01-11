@@ -13,6 +13,7 @@ $app = new Slim();	// para instanciar direto sem 'use' seria '$app = new \Slim\S
 $app->config('debug', true);
 
 // includes para as rotas
+require_once("inc-functions.php");
 require_once("inc-site.php");
 require_once("inc-admin.php");
 require_once("inc-admin-users.php");
