@@ -9,7 +9,7 @@ namespace Hcode\Model;
 
 use \Hcode\DB\Sql;
 use \Hcode\Model;
-use \Hcode\Mailer;
+
 
 class Category extends Model {
 
@@ -73,8 +73,7 @@ class Category extends Model {
 		file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode('', $html));
 	}
 
-	/*
-
+	// aula 113 7"30 - produtos relacionados e não relacionados a uma categoria
 	public function getProducts($related = true) {
 
 		$sql = new Sql();
@@ -109,6 +108,7 @@ class Category extends Model {
 
 	}
 
+	/*
 	public function getProductsPage($page = 1, $itemsPerPage = 8) {
 
 		$start = ($page - 1) * $itemsPerPage;
@@ -135,7 +135,10 @@ class Category extends Model {
 		];
 
 	}
+	*/
 
+	// aula 113 17"43
+	// notar que está forçando receber um valor do tipo Product
 	public function addProduct(Product $product) {
 
 		$sql = new Sql();
@@ -157,7 +160,7 @@ class Category extends Model {
 		]);
 
 	}
-			
+	/*		
 	public static function getPage($page = 1, $itemsPerPage = 10) {
 
 		$start = ($page - 1) * $itemsPerPage;

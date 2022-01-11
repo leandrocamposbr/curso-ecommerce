@@ -105,25 +105,64 @@ $app->post("/admin/categories/:idcategory", function($idcategory) {
 
 });
 
-// aula 110 # a partir da 109, menos comentários e não repete comentáriod do que já fez igual
-// URL chamada ao clicar em uma categoria no site http://www.hcodecommerce.com.br/categories/7
-$app->get("/categories/:idcategory", function($idcategory) {
+// AULA 113
+$app->get("/admin/categories/:idcategory/products", function($idcategory) {
+
+	User::verifyLogin(); // ver notas nas chamadas anteriores acima
 
 	$category = new Category();
 
 	$category->get((int)$idcategory);
 
-	// construtor de Page() inclui o header 
-	// setTpl(); // acrescenta o corpo
-	// __destruct() da classe e desenha o footer
-	$page = new Page(); 
-	$page->setTpl("category", [
+	$page = new PageAdmin(); 
+
+	$page->setTpl("categories-products", [
 		'category'=>$category->getValues(),
-		'products'=>[]
-	]); 
+		'productsRelated'=>$category->getProducts(),
+		'productsNotRelated'=>$category->getProducts(false)
+	]);
 
 });
 
+// AULA 113 15"42 copiado do github
+$app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idcategory, $idproduct){
+
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$product = new Product();
+
+	$product->get((int)$idproduct);
+
+	$category->addProduct($product);
+
+	header("Location: /admin/categories/".$idcategory."/products");
+	exit;
+
+});
+
+// AULA 113 copiado do github
+$app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($idcategory, $idproduct){
+
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$product = new Product();
+
+	$product->get((int)$idproduct);
+
+	$category->removeProduct($product);
+
+	header("Location: /admin/categories/".$idcategory."/products");
+	exit;
+
+});
 
 
 ?>

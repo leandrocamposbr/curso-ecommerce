@@ -1,7 +1,8 @@
 <?php
 
-use \Hcode\Model\Product;
 use \Hcode\Page; // aula 103 nosso namespace. Dentro de vendor tem várias. Essa é a nossa.
+use \Hcode\Model\Product;
+use \Hcode\Model\Category; // aula 113
 
 // "/" é a rota que estamos chamando e o 'bloco da rota' entre { }.
 // (*1) aula 103 - "se chamarem meu site sem nenhum complemento na url ("/"), execute isso"
@@ -31,5 +32,26 @@ $app->get('/', function() {
 	// nesse ponto, vai chamar o __destruct() da classe e desenhar o footer
 
 });
+
+
+// aula 110 # a partir da 109, menos comentários e não repete comentáriod do que já fez igual
+// URL chamada ao clicar em uma categoria no site http://www.hcodecommerce.com.br/categories/7
+$app->get("/categories/:idcategory", function($idcategory) {
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	// construtor de Page() inclui o header 
+	// setTpl(); // acrescenta o corpo
+	// __destruct() da classe e desenha o footer
+	$page = new Page(); 
+	$page->setTpl("category", [
+		'category'=>$category->getValues(),
+		'products'=>Product::checkList($category->getProducts())
+	]); 
+
+});
+
 
 ?>
